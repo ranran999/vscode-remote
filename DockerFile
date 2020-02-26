@@ -5,19 +5,12 @@ MAINTAINER ranran9
 #install sshd
 RUN apt-get update && apt-get install -y ssh curl tar
 
-#RUN echo ALL:127.0.0.1 >> /etc/hosts.allow
-
 ENV USER=vscode
 ENV USER_PASS=tcuser
 ENV SHELL=/bin/bash
-#SSH_PASSPHRASE minimum five characters
-ENV SSH_PASSPHRASE=
-RUN useradd -s /bin/bash -u 1000 -g 50 -G sudo,100 -m ${USER} && \
-    echo "${USER}:${USER_PASS}" | chpasswd
 
-USER ${USER}
-RUN ssh-keygen -q -t rsa -b 4096 -N '${SSH_PASSPHRASE}' -f ${HOME}/.ssh/id_rsa && \
-    mv ${HOME}/.ssh/id_rsa.pub ${HOME}/.ssh/authorized_keys
+RUN useradd -s /bin/bash -u 1000 -g 50 -G sudo,100 -m ${USER} && \
+  echo "${USER}:${USER_PASS}" | chpasswd
 
 USER root
 
@@ -30,7 +23,3 @@ EXPOSE 22
 
 RUN mkdir /run/sshd
 CMD ["/usr/sbin/sshd", "-D"]
-
-
-#docker run -d --name vscode -v /var/run/docker.sock:/var/run/docker.sock -p 2022:22 ranran9/vscode-remote-ssh
-docker run -it --name vscode -v /var/run/docker.sock:/var/run/docker.sock -p 2022:22 ranran9/vscode-remote-ssh bash
